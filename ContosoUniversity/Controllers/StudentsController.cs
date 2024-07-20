@@ -20,22 +20,51 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(string searchString, string sortOrder)
         {
-            if (_context.Student == null)
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["FirstNameSortParm"] = sortOrder == "firstname" ? "firstname_desc" : "firstname";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+            var students = from m in _context.Student
+                     .Include(s => s.Enrollments)
+                        .ThenInclude(e => e.Course)
+                           select m;
+
+            switch (sortOrder)
             {
-                return Problem("Entity set 'MvcMovieContext.Movie'  is null.");
+                case "name_desc":
+                    students = students.OrderByDescending(s => s.LastName);
+                    break;
+                case "firstname":
+                    students = students.OrderBy(s => s.FirstMidName);
+                    break;
+                case "firstname_desc":
+                    students = students.OrderByDescending(s => s.FirstMidName);
+                    break;
+                case "Date":
+                    students = students.OrderBy(s => s.EnrollmentDate);
+                    break;
+                case "date_desc":
+                    students = students.OrderByDescending(s => s.EnrollmentDate);
+                    break;
+                default:
+                    students = students.OrderBy(s => s.LastName);
+                    break;
             }
 
-            var movies = from m in _context.Student
-                         select m;
+            if (_context.Student == null)
+            {
+                return Problem("Entity set 'ContosoUniversityContext'  is null.");
+            }
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                movies = movies.Where(s => s.LastName!.Contains(searchString));
+                students = students.Where(s => s.LastName!.Contains(searchString) ||
+                s.FirstMidName!.Contains(searchString));
             }
 
-            return View(await movies.ToListAsync());
+            return View(students.AsNoTracking());
         }
 
         // GET: Students/Details/5
@@ -71,7 +100,7 @@ namespace ContosoUniversity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,LastName,FirstMidName,EnrollmentDate")] Student student)
+        public async Task<IActionResult> Create([Bind("LastName,FirstMidName,EnrollmentDate")] Student student)
         {
             if (ModelState.IsValid)
             {
