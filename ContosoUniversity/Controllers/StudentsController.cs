@@ -25,11 +25,23 @@ namespace ContosoUniversity.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["FirstNameSortParm"] = sortOrder == "firstname" ? "firstname_desc" : "firstname";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewData["CurrentFilter"] = searchString;
+
+            if (_context.Student == null)
+            {
+                return Problem("Entity set 'ContosoUniversityContext'  is null.");
+            }
 
             var students = from m in _context.Student
                      .Include(s => s.Enrollments)
                         .ThenInclude(e => e.Course)
                            select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                students = students.Where(s => s.LastName.ToUpper().Contains(searchString.ToUpper()) ||
+                s.FirstMidName.ToUpper().Contains(searchString.ToUpper()));
+            }
 
             switch (sortOrder)
             {
@@ -53,18 +65,7 @@ namespace ContosoUniversity.Controllers
                     break;
             }
 
-            if (_context.Student == null)
-            {
-                return Problem("Entity set 'ContosoUniversityContext'  is null.");
-            }
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                students = students.Where(s => s.LastName!.Contains(searchString) ||
-                s.FirstMidName!.Contains(searchString));
-            }
-
-            return View(students.AsNoTracking());
+            return View(await students.AsNoTracking().ToListAsync());
         }
 
         // GET: Students/Details/5
