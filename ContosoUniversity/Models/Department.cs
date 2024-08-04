@@ -21,7 +21,7 @@ namespace ContosoUniversity.Models
 
         public int? InstructorID { get; set; }
 
-        public Instructor Administrator { get; set; }
-        public ICollection<Course> Courses { get; set; }
+        public Instructor? Administrator { get; set; }
+        public ICollection<Course>? Courses { get; set; }
     }
 }
