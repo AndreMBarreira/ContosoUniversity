@@ -77,7 +77,6 @@ namespace ContosoUniversity.Controllers
         public IActionResult Create()
         {
             var instructor = new Instructor();
-            instructor.CourseAssignments = new List<CourseAssignment>();
             PopulateAssignedCourseData(instructor);
             return View();
         }
@@ -91,7 +90,6 @@ namespace ContosoUniversity.Controllers
         {
             if (selectedCourses != null)
             {
-                instructor.CourseAssignments = new List<CourseAssignment>();
                 foreach (var course in selectedCourses)
                 {
                     var courseToAdd = new CourseAssignment { InstructorID = instructor.ID, CourseID = int.Parse(course) };
