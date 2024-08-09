@@ -96,6 +96,10 @@ namespace ContosoUniversity.Controllers
                     instructor.CourseAssignments.Add(courseToAdd);
                 }
             }
+            if (String.IsNullOrWhiteSpace(instructor.OfficeAssignment?.Location))
+            {
+                instructor.OfficeAssignment = null;
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(instructor);
