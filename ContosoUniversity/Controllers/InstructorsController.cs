@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
 using ContosoUniversity.Models.SchoolViewModels;
+using NuGet.Protocol;
 
 namespace ContosoUniversity.Controllers
 {
@@ -253,9 +254,12 @@ namespace ContosoUniversity.Controllers
                 .Include(i => i.CourseAssignments)
                 .SingleAsync(i => i.ID == id);
 
-            OfficeAssignment officeAssignment = await _context.OfficeAssignments
-                .Include(i => i.Instructor)
-                .SingleAsync(i => i.InstructorID == id);
+            if (instructor.OfficeAssignment != null)
+            {
+                OfficeAssignment officeAssignment = await _context.OfficeAssignments
+                    .Include(i => i.Instructor)
+                    .SingleAsync(i => i.InstructorID == id);
+            }
 
             var departments = await _context.Departments
                 .Where(d => d.InstructorID == id)
