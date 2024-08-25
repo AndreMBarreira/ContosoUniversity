@@ -33,7 +33,7 @@ namespace ContosoUniversity.Models
 
         public OfficeAssignment? OfficeAssignment { get; set; }
 
-        private ICollection<CourseAssignment> _courseAssignments;
+        private ICollection<CourseAssignment>? _courseAssignments;
         public ICollection<CourseAssignment>? CourseAssignments
         {
             get
