@@ -36,6 +36,7 @@ namespace ContosoUniversity.Controllers
 
             var department = await _context.Departments
                 .Include(d => d.Administrator)
+                .Include(c => c.Courses)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.DepartmentID == id);
             if (department == null)
