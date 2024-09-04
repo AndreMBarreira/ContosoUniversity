@@ -7,7 +7,7 @@ public static class SeedData
 {
     public static void Initialize(IServiceProvider serviceProvider)
     {
-        using (var context = new ContosoUniversityContext(
+        /*using (var context = new ContosoUniversityContext(
             serviceProvider.GetRequiredService<
                 DbContextOptions<ContosoUniversityContext>>()))
         {
@@ -344,6 +344,6 @@ public static class SeedData
                     });
 
                 context.SaveChanges();
-        }
+        }*/
     }
 }

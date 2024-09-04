@@ -40,7 +40,8 @@ namespace ContosoUniversity.Controllers
                 using (var command = conn.CreateCommand())
                 {
                     string query = "SELECT EnrollmentDate, COUNT(*) AS StudentCount "
-                        + "FROM Student "
+                        + "FROM Person "
+                        + "WHERE Discriminator = 'Student' "
                         + "GROUP BY EnrollmentDate";
                     command.CommandText = query;
                     DbDataReader reader = await command.ExecuteReaderAsync();
