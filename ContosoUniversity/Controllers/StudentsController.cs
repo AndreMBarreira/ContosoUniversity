@@ -20,7 +20,7 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(
+        /*public async Task<IActionResult> Index(
                string sortOrder,
                 string currentFilter,
                  string searchString,
@@ -85,6 +85,66 @@ namespace ContosoUniversity.Controllers
             int pageSize = 3;
             return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
 
+        }*/
+
+        public async Task<IActionResult> Index(
+             string sortOrder,
+             string currentFilter,
+             string searchString,
+             int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] =
+                String.IsNullOrEmpty(sortOrder) ? "LastName_desc" : "";
+            ViewData["FirstNameSortParm"] =
+                sortOrder == "FirstMidName" ? "FirstMidName_desc" : "FirstMidName";
+            ViewData["DateSortParm"] =
+                sortOrder == "EnrollmentDate" ? "EnrollmentDate_desc" : "EnrollmentDate";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var students = from s in _context.Student
+                           select s;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                students = students.Where(s => s.LastName.ToUpper().Contains(searchString.ToUpper()) ||
+                s.FirstMidName.ToUpper().Contains(searchString.ToUpper()));
+            }
+
+            if (string.IsNullOrEmpty(sortOrder))
+            {
+                sortOrder = "LastName";
+            }
+
+            bool descending = false;
+            if (sortOrder.EndsWith("_desc"))
+            {
+                sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+                descending = true;
+            }
+
+            if (descending)
+            {
+                students = students.OrderByDescending(e => EF.Property<object>(e, sortOrder));
+            }
+            else
+            {
+                students = students.OrderBy(e => EF.Property<object>(e, sortOrder));
+            }
+
+            int pageSize = 3;
+            return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(),
+                pageNumber ?? 1, pageSize));
         }
 
         // GET: Students/Details/5
