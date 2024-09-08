@@ -118,7 +118,7 @@ namespace ContosoUniversity.Controllers
             if (!String.IsNullOrEmpty(searchString))
             {
                 students = students.Where(s => s.LastName.ToUpper().Contains(searchString.ToUpper()) ||
-                s.FirstMidName.ToUpper().Contains(searchString.ToUpper()));
+                s.FirstMidName.ToUpper().Contains(searchString.ToUpper()) || s.EnrollmentDate.ToString().Contains(searchString));
             }
 
             if (string.IsNullOrEmpty(sortOrder))
